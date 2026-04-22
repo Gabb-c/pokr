@@ -1,3 +1,158 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================================================
+   pokr — styles
+   ----------------------------------------------------------------------------
+   Theme system built on Tailwind v4's @theme directive.
 
-@import 'tailwindcss';
+   The default theme is "Obsidian" — a neutral charcoal palette with a teal
+   primary. Alternate themes are scoped under [data-theme="..."] and override
+   the same semantic tokens.
+
+   Semantic color roles (what each token is for):
+     --color-bg               App background (outermost layer)
+     --color-surface          Cards, panels, inputs
+     --color-surface-elevated Menus, popovers, modals (one step "above" surface)
+     --color-text             Primary text
+     --color-text-muted       Secondary text, labels, captions
+     --color-text-subtle      Tertiary text, placeholders, disabled states
+     --color-primary          Brand color — buttons, selected states, links
+     --color-primary-hover    Primary on hover/active
+     --color-accent           Secondary highlight — consensus indicator, callouts
+     --color-success          Positive feedback (voted, joined, confirmed)
+     --color-warning          Caution (pending, waiting, timeout approaching)
+     --color-danger           Errors, destructive actions
+     --color-border           Subtle dividers and component borders
+
+   Theme tokens generate Tailwind utilities automatically. For example,
+   --color-primary produces bg-primary, text-primary, border-primary, etc.
+
+   Created for pokr.app by Gabriel (@Gabb-c), 2026
+   Licensed under MIT with the rest of the project.
+   ============================================================================ */
+
+@import "tailwindcss";
+
+/* ----------------------------------------------------------------------------
+   Default theme — Obsidian
+   Neutral charcoal with a teal primary. No color cast on backgrounds,
+   so alternate themes can shift warm or cool without feeling discordant.
+   ---------------------------------------------------------------------------- */
+@theme {
+  --color-bg: #141618;
+  --color-surface: #1e2125;
+  --color-surface-elevated: #2a2e35;
+
+  --color-text: #e4e6ea;
+  --color-text-muted: #a0a6b0;
+  --color-text-subtle: #6b7280;
+
+  --color-primary: #2dd4bf;
+  --color-primary-hover: #5eead4;
+
+  --color-accent: #fb923c;
+
+  --color-success: #4ade80;
+  --color-warning: #facc15;
+  --color-danger: #ef4444;
+
+  --color-border: #2a2e35;
+}
+
+/* ----------------------------------------------------------------------------
+   Alternate themes
+   Override the same tokens under a [data-theme] selector. The theme switcher
+   toggles data-theme on <html>; @layer base keeps these from conflicting
+   with Tailwind's own layers.
+   ---------------------------------------------------------------------------- */
+@layer base {
+  /* Midnight — electric violet on deep indigo */
+  [data-theme="midnight"] {
+    --color-bg: #0f0f1e;
+    --color-surface: #1a1a30;
+    --color-surface-elevated: #262645;
+
+    --color-text: #e8e8f0;
+    --color-text-muted: #9a9ab3;
+    --color-text-subtle: #6c6c85;
+
+    --color-primary: #8b5cf6;
+    --color-primary-hover: #a78bfa;
+
+    --color-accent: #22d3ee;
+
+    --color-success: #34d399;
+    --color-warning: #fbbf24;
+    --color-danger: #fb7185;
+
+    --color-border: #262645;
+  }
+
+  /* Terminal — phosphor green on true black */
+  [data-theme="terminal"] {
+    --color-bg: #0a0e0b;
+    --color-surface: #141a15;
+    --color-surface-elevated: #1f2a21;
+
+    --color-text: #d4e4d4;
+    --color-text-muted: #8ba08b;
+    --color-text-subtle: #5a6a5a;
+
+    --color-primary: #4ade80;
+    --color-primary-hover: #86efac;
+
+    --color-accent: #facc15;
+
+    --color-success: #86efac;
+    --color-warning: #facc15;
+    --color-danger: #f87171;
+
+    --color-border: #1f2a21;
+  }
+
+  /* Magma — hot coral on volcanic dark */
+  [data-theme="magma"] {
+    --color-bg: #171316;
+    --color-surface: #231d20;
+    --color-surface-elevated: #32282c;
+
+    --color-text: #f0e5e1;
+    --color-text-muted: #b5a39e;
+    --color-text-subtle: #7a6a66;
+
+    --color-primary: #ff6b5c;
+    --color-primary-hover: #ff8a7d;
+
+    --color-accent: #fbbf24;
+
+    --color-success: #4ade80;
+    --color-warning: #fbbf24;
+    --color-danger: #ec4899;
+
+    --color-border: #32282c;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Base element styles
+   Keep this section small — most styling should happen via utility classes
+   on components. This is just for the app shell.
+   ---------------------------------------------------------------------------- */
+@layer base {
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    color-scheme: dark;
+  }
+
+  body {
+    min-height: 100vh;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Keep focus rings visible and on-brand across all themes */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}

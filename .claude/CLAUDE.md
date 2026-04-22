@@ -53,3 +53,13 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Icons
+
+- Always use **`@ng-icons/core`** + **`@ng-icons/lucide`** for all icons. Never write raw SVG inline.
+- Import `NgIcon` and `provideIcons` from `@ng-icons/core`; import individual icon symbols from `@ng-icons/lucide`.
+- Register icons at component level via `providers: [provideIcons({ lucideIconName })]` — not globally.
+- Use `<ng-icon name="lucideIconName" />` in templates. Set `size` in pixels (e.g. `size="20"`). Color inherits from `currentColor`.
+- Always add `aria-hidden="true"` on decorative icons; add an `aria-label` when the icon is the sole accessible label.
+- To find an icon: browse https://lucide.dev/ (visual search). The Angular symbol name is `lucide` + PascalCase icon name, e.g. `Plus` → `lucidePlus`, `LogIn` → `lucideLogIn`.
+- For library usage questions: https://github.com/ng-icons/ng-icons
