@@ -2,7 +2,7 @@ pre-commit:
   parallel: true
   commands:
     lint:
-      glob: "*.{ts,html,css,json,md}"
+      glob: "*.{ts,html}"
       run: pnpm exec eslint --fix {staged_files}
       stage_fixed: true
     format:
