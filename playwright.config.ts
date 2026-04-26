@@ -1,70 +1,74 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
+const isCI = !!process.env['CI'];
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
 export default defineConfig({
   testDir: './e2e',
+
   /* Run tests in files in parallel */
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env['CI'],
-  /* Retry on CI only */
-  retries: process.env['CI'] ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env['CI'] ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env['PLAYWRIGHT_TEST_BASE_URL'] ?? 'http://localhost:4200',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+  /* Fail the build on CI if you accidentally left test.only in the source code. */
+  forbidOnly: isCI,
+
+  /* Retry on CI only — flaky tests get 2 chances */
+  retries: isCI ? 2 : 0,
+
+  /* Use multiple workers; CI runners typically have 2-4 cores */
+  workers: isCI ? '50%' : undefined,
+
+  /* Global timeouts — be generous on CI where everything is slower */
+  timeout: isCI ? 60_000 : 30_000,
+  expect: {
+    timeout: isCI ? 10_000 : 5_000,
   },
 
-  /* Configure projects for major browsers */
+  /* Reporters:
+   * - On CI: blob (for sharded merging), github (PR annotations), list (terminal)
+   * - Locally: html (auto-open on failure), list
+   */
+  reporter: isCI ? [['blob'], ['github'], ['list']] : [['html', { open: 'on-failure' }], ['list']],
+
+  /* Shared settings */
+  use: {
+    baseURL: process.env['PLAYWRIGHT_TEST_BASE_URL'] ?? 'http://localhost:4200',
+
+    /* Collect trace on first retry — small artifacts, only when needed */
+    trace: 'on-first-retry',
+
+    /* Capture screenshots and videos only when tests fail */
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+
+    /* Reasonable action/navigation timeouts */
+    actionTimeout: 15_000,
+    navigationTimeout: 30_000,
+  },
+
+  /* Auto-start the Angular dev server before tests, reuse if already running locally */
+  webServer: {
+    command: 'pnpm start',
+    url: 'http://localhost:4200',
+    reuseExistingServer: !isCI,
+    timeout: 120_000,
+    stdout: 'ignore',
+    stderr: 'pipe',
+  },
+
+  /* Run all major browsers */
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
-
     {
       name: 'webkit',
+      retries: isCI ? 3 : 0,
       use: { ...devices['Desktop Safari'] },
     },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
   ],
 });
