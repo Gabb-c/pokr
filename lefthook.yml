@@ -21,4 +21,4 @@ pre-push:
     typecheck:
       run: pnpm exec tsc --noEmit
     test:
-      run: pnpm test
+      run: pnpm test --watch=false
